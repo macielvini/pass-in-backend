@@ -1,9 +1,11 @@
 package macielvini.com.pass_in.controllers;
 
 import lombok.RequiredArgsConstructor;
+import macielvini.com.pass_in.dto.attendee.AttendeeListResponseDto;
 import macielvini.com.pass_in.dto.event.EventIdDto;
 import macielvini.com.pass_in.dto.event.EventRequestDto;
 import macielvini.com.pass_in.dto.event.EventResponseDto;
+import macielvini.com.pass_in.services.AttendeeService;
 import macielvini.com.pass_in.services.EventService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,6 +16,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 @RequiredArgsConstructor
 public class EventController {
     private final EventService eventService;
+    private final AttendeeService attendeeService;
 
     @GetMapping("/{id}")
     public ResponseEntity<EventResponseDto> getEvent(@PathVariable String id) {
@@ -28,5 +31,9 @@ public class EventController {
         return ResponseEntity.created(uri).body(eventId);
     }
 
-
+    @GetMapping("/attendees/{id}")
+    public ResponseEntity<AttendeeListResponseDto> getEventAttendees(@PathVariable String id) {
+        AttendeeListResponseDto attendeeList = this.attendeeService.getEventsAttendee(id);
+        return ResponseEntity.ok(attendeeList);
+    }
 }
