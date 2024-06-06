@@ -1,7 +1,9 @@
 package macielvini.com.pass_in.dto.event;
 
+import lombok.Getter;
 import macielvini.com.pass_in.domain.event.Event;
 
+@Getter
 public class EventResponseDto {
     EventDetailDto event;
 
