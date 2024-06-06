@@ -3,6 +3,7 @@ package macielvini.com.pass_in.services;
 import lombok.RequiredArgsConstructor;
 import macielvini.com.pass_in.domain.attendee.Attendee;
 import macielvini.com.pass_in.domain.event.Event;
+import macielvini.com.pass_in.domain.event.exceptions.EventNotFoundException;
 import macielvini.com.pass_in.dto.event.EventIdDto;
 import macielvini.com.pass_in.dto.event.EventRequestDto;
 import macielvini.com.pass_in.dto.event.EventResponseDto;
@@ -20,7 +21,7 @@ public class EventService {
     private final AttendeeRepository attendeeRepository;
 
     public EventResponseDto getEventDetail(String id) {
-        Event event = this.eventRepository.findById(id).orElseThrow(() -> new RuntimeException("Event not found with ID: " + id));
+        Event event = this.eventRepository.findById(id).orElseThrow(() -> new EventNotFoundException("Event not found with ID: " + id));
         List<Attendee> attendeeList = this.attendeeRepository.findByEventId(id);
         return new EventResponseDto(event, attendeeList.size());
     }
