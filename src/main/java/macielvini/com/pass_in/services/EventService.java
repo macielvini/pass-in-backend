@@ -7,7 +7,6 @@ import macielvini.com.pass_in.domain.event.exceptions.EventNotFoundException;
 import macielvini.com.pass_in.dto.event.EventIdDto;
 import macielvini.com.pass_in.dto.event.EventRequestDto;
 import macielvini.com.pass_in.dto.event.EventResponseDto;
-import macielvini.com.pass_in.repositories.AttendeeRepository;
 import macielvini.com.pass_in.repositories.EventRepository;
 import org.springframework.stereotype.Service;
 
@@ -18,11 +17,11 @@ import java.util.List;
 @RequiredArgsConstructor
 public class EventService {
     private final EventRepository eventRepository;
-    private final AttendeeRepository attendeeRepository;
+    private final AttendeeService attendeeService;
 
     public EventResponseDto getEventDetail(String id) {
         Event event = this.eventRepository.findById(id).orElseThrow(() -> new EventNotFoundException("Event not found with ID: " + id));
-        List<Attendee> attendeeList = this.attendeeRepository.findByEventId(id);
+        List<Attendee> attendeeList = this.attendeeService.getAllAttendeesFromEvent(id);
         return new EventResponseDto(event, attendeeList.size());
     }
 
