@@ -2,6 +2,7 @@ package macielvini.com.pass_in.services;
 
 import lombok.RequiredArgsConstructor;
 import macielvini.com.pass_in.domain.attendee.Attendee;
+import macielvini.com.pass_in.domain.attendee.exceptions.AttendeeAlreadyRegisteredException;
 import macielvini.com.pass_in.domain.checkIn.CheckIn;
 import macielvini.com.pass_in.dto.attendee.AttendeeDetail;
 import macielvini.com.pass_in.dto.attendee.AttendeeListResponseDto;
@@ -25,6 +26,11 @@ public class AttendeeService {
         if (isAttendeeRegistered.isPresent()) {
             throw new AttendeeAlreadyRegisteredException("Attendee already registered");
         }
+    }
+
+    public Attendee registerAttendee(Attendee attendee) {
+        this.attendeeRepository.save(attendee);
+        return attendee;
     }
 
     public List<Attendee> getAllAttendeesFromEvent(String eventId) {
