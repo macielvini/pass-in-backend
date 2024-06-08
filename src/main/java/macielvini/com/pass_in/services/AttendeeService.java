@@ -3,12 +3,16 @@ package macielvini.com.pass_in.services;
 import lombok.RequiredArgsConstructor;
 import macielvini.com.pass_in.domain.attendee.Attendee;
 import macielvini.com.pass_in.domain.attendee.exceptions.AttendeeAlreadyRegisteredException;
+import macielvini.com.pass_in.domain.attendee.exceptions.AttendeeNotFoundException;
 import macielvini.com.pass_in.domain.checkIn.CheckIn;
+import macielvini.com.pass_in.dto.attendee.AttendeeBadgeResponseDto;
 import macielvini.com.pass_in.dto.attendee.AttendeeDetail;
 import macielvini.com.pass_in.dto.attendee.AttendeeListResponseDto;
+import macielvini.com.pass_in.dto.attendee.AttendeeBadgeDto;
 import macielvini.com.pass_in.repositories.AttendeeRepository;
 import macielvini.com.pass_in.repositories.CheckInRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -19,6 +23,17 @@ import java.util.Optional;
 public class AttendeeService {
     private final AttendeeRepository attendeeRepository;
     private final CheckInRepository checkInRepository;
+
+    public AttendeeBadgeResponseDto getAttendeeBadge(String attendeeId, UriComponentsBuilder uriComponentsBuilder) {
+        Attendee attendee = this.attendeeRepository.findById(attendeeId)
+                .orElseThrow(() -> new AttendeeNotFoundException("Attendee not found with ID: " + attendeeId));
+
+        var uri = uriComponentsBuilder.path("/attendees/{id}/check-in").buildAndExpand(attendee.getId()).toUri().toString();
+
+        return new AttendeeBadgeResponseDto(
+                new AttendeeBadgeDto(attendee.getName(), attendee.getEmail(), uri, attendee.getEvent().getId())
+        );
+    }
 
     public void verifyAttendeeSubscription(String email, String eventId) {
         Optional<Attendee> isAttendeeRegistered = this.attendeeRepository.findByEventIdAndEmail(eventId, email);
