@@ -19,6 +19,14 @@ public class AttendeeService {
     private final AttendeeRepository attendeeRepository;
     private final CheckInRepository checkInRepository;
 
+    public void verifyAttendeeSubscription(String email, String eventId) {
+        Optional<Attendee> isAttendeeRegistered = this.attendeeRepository.findByEventIdAndEmail(eventId, email);
+
+        if (isAttendeeRegistered.isPresent()) {
+            throw new AttendeeAlreadyRegisteredException("Attendee already registered");
+        }
+    }
+
     public List<Attendee> getAllAttendeesFromEvent(String eventId) {
         return this.attendeeRepository.findByEventId(eventId);
     }
