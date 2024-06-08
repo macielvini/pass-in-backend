@@ -10,7 +10,6 @@ import macielvini.com.pass_in.dto.attendee.AttendeeDetail;
 import macielvini.com.pass_in.dto.attendee.AttendeeListResponseDto;
 import macielvini.com.pass_in.dto.attendee.AttendeeBadgeDto;
 import macielvini.com.pass_in.repositories.AttendeeRepository;
-import macielvini.com.pass_in.repositories.CheckInRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -64,6 +63,11 @@ public class AttendeeService {
                     checkedInAt);
         }).toList();
         return new AttendeeListResponseDto(attendeeDetails);
+    }
+
+    public void checkInAttendee(String attendeeId) {
+        Attendee attendee = this.getAttendeeById(attendeeId);
+        this.checkInService.registerCheckIn(attendee);
     }
 
     private Attendee getAttendeeById(String id) {
