@@ -1,7 +1,9 @@
 package macielvini.com.pass_in.controllers;
 
 import lombok.RequiredArgsConstructor;
+import macielvini.com.pass_in.dto.attendee.AttendeeIdDto;
 import macielvini.com.pass_in.dto.attendee.AttendeeListResponseDto;
+import macielvini.com.pass_in.dto.attendee.AttendeeRequestDto;
 import macielvini.com.pass_in.dto.event.EventIdDto;
 import macielvini.com.pass_in.dto.event.EventRequestDto;
 import macielvini.com.pass_in.dto.event.EventResponseDto;
@@ -35,5 +37,12 @@ public class EventController {
     public ResponseEntity<AttendeeListResponseDto> getEventAttendees(@PathVariable String id) {
         AttendeeListResponseDto attendeeList = this.attendeeService.getEventsAttendee(id);
         return ResponseEntity.ok(attendeeList);
+    }
+
+    @PostMapping("/{id}/attendees")
+    public ResponseEntity<AttendeeIdDto> registerParticipant(@PathVariable String id, @RequestBody AttendeeRequestDto body, UriComponentsBuilder uriComponentsBuilder) {
+        AttendeeIdDto attendeeId = this.eventService.registerAttendeeOnEvent(id, body);
+        var uri = uriComponentsBuilder.path("/attendees/{attendeeId}/badge").buildAndExpand(attendeeId.attendeeId()).toUri();
+        return ResponseEntity.created(uri).body(attendeeId);
     }
 }
