@@ -22,11 +22,10 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class AttendeeService {
     private final AttendeeRepository attendeeRepository;
-    private final CheckInRepository checkInRepository;
+    private final CheckInService checkInService;
 
     public AttendeeBadgeResponseDto getAttendeeBadge(String attendeeId, UriComponentsBuilder uriComponentsBuilder) {
-        Attendee attendee = this.attendeeRepository.findById(attendeeId)
-                .orElseThrow(() -> new AttendeeNotFoundException("Attendee not found with ID: " + attendeeId));
+        Attendee attendee = this.getAttendeeById(attendeeId);
 
         var uri = uriComponentsBuilder.path("/attendees/{id}/check-in").buildAndExpand(attendee.getId()).toUri().toString();
 
@@ -55,7 +54,7 @@ public class AttendeeService {
     public AttendeeListResponseDto getEventsAttendee(String eventId) {
         List<Attendee> attendeeList = this.getAllAttendeesFromEvent(eventId);
         List<AttendeeDetail> attendeeDetails = attendeeList.stream().map(attendee -> {
-            Optional<CheckIn> checkIn = this.checkInRepository.findByAttendeeId(attendee.getId());
+            Optional<CheckIn> checkIn = this.checkInService.getCheckIn(attendee.getId());
             LocalDateTime checkedInAt = checkIn.map(CheckIn::getCreatedAt).orElse(null);
             return new AttendeeDetail(
                     attendee.getId(),
@@ -65,5 +64,9 @@ public class AttendeeService {
                     checkedInAt);
         }).toList();
         return new AttendeeListResponseDto(attendeeDetails);
+    }
+
+    private Attendee getAttendeeById(String id) {
+        return this.attendeeRepository.findById(id).orElseThrow(() -> new AttendeeNotFoundException("Attendee not found with ID: " + id));
     }
 }
